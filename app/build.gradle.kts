@@ -10,17 +10,29 @@ android {
 
     defaultConfig {
         applicationId = "com.epn.criptoapi"
-        minSdk = 35
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        getByName("debug") {
+            // Usa el keystore de debug por defecto
+        }
+        create("release") {
+            storeFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -56,4 +68,16 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    // --- AGREGA ESTA LÍNEA ---
+    implementation(libs.coil.compose)
+    // -------------------------
+
+    // También asegúrate de tener Retrofit y Gson si no los has puesto ya:
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging) // Opcional, para logs
+    implementation(libs.lifecycle.viewmodel.compose) // Para viewModel()
+    val nav_version = "2.8.5" // Puedes verificar la última versión en Google
+    implementation("androidx.navigation:navigation-compose:$nav_version")
 }

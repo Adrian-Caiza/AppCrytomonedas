@@ -7,6 +7,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -37,6 +39,7 @@ fun CryptoDetailScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isFavorite by viewModel.isFavorite.collectAsState()
 
     // Cargar datos cuando cambia el ID
     LaunchedEffect(cryptoId) {
@@ -67,6 +70,16 @@ fun CryptoDetailScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 actions = {
+                    // Botón de Favorito (Corazón)
+                    IconButton(onClick = { viewModel.toggleFavorite(cryptoId) }) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (isFavorite) "Eliminar de favoritos" else "Agregar a favoritos",
+                            tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    // Botón de Refrescar
                     IconButton(onClick = { viewModel.loadCryptoDetail(cryptoId) }) {
                         Icon(
                             Icons.Default.Refresh,
@@ -214,6 +227,7 @@ fun CryptoHeader(crypto: CryptoDetail) {
             crypto.marketData?.priceChangePercentage24h?.let { change ->
                 val changeColor = if (change >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
                 val changePrefix = if (change >= 0) "+" else ""
+
                 Text(
                     text = "$changePrefix${String.format("%.2f", change)}% (24h)",
                     style = MaterialTheme.typography.titleMedium,
